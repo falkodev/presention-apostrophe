@@ -26,7 +26,7 @@ Je propose de créer une application de gestion de produits. Le but sera de list
 
 Pour démarrer, il nous faut définir une structure de donnée. Je me suis inspiré de la base de données test de MongoDB "restaurants". Nous allons donc gérer des restaurants, qui auront des notes attribuées en fonction d'avis clients.
 
-Pour modéliser ces données, il faut créer un module Apostrophe. Pour cela, créons un dossier "restaurant" dans "lib", et insérons un fichier "index.js" avec ce contenu : 
+Pour modéliser ces données, il faut créer un module Apostrophe. Pour cela, créons un dossier "restaurant" dans "lib", et insérons un fichier "index.js" avec ce contenu :
 
 ```js
 module.exports = {
@@ -83,7 +83,7 @@ module.exports = {
 }
 ```
 
-Ici, nous définissons une "piece" apostrophe, c'est-à-dire un document MongoDB qui sera de type "restaurant" \(donné par la propriété "name", ligne 3\). A l'intérieur, des champs de type chaine de caractères et obligatoirement remplis : 
+Ici, nous définissons une "piece" apostrophe, c'est-à-dire un document MongoDB qui sera de type "restaurant" \(donné par la propriété "name", ligne 3\). A l'intérieur, des champs de type chaine de caractères et obligatoirement remplis :
 
 * une adresse,
 * le quartier de New-York,
@@ -136,7 +136,7 @@ On a simplement ajouté la dernière ligne : `'restaurant': {}`Ce faisant, Apost
 
 Si on clique sur l'entrée "Resturants", pour l'instant aucun document à l'intérieur. Nous allons maintenant ajouter de la donnée.
 
-Créons un dossier "data" dans lib, et ajoutons-y un fichier data.json avec ces données : 
+Créons un dossier "data" dans lib, et ajoutons-y un fichier data.json avec ces données :
 
 ```json
 {"address": "1007 Morris Park Ave", "borough": "Bronx", "cuisine": "Bakery", "grades": [{"date": "01/01/2017", "grade": "A", "score": 2}, {"date": "01/01/2017", "grade": "A", "score": 6}, {"date": "01/01/2017", "grade": "A", "score": 10}, {"date": "01/01/2017", "grade": "A", "score": 9}, {"date": "01/01/2017", "grade": "B", "score": 14}], "name": "Morris Park Bake Shop"}
@@ -168,36 +168,38 @@ module.exports = {
   construct: (self, options) => {
 
     self.afterInit = () => {
-      self.apos.docs.find({ res: {} }, { type: 'restaurant' }, { _id: 1 })
-      .published(null)
-      .permission(false)
-      .toArray(async (err, pieces) => {
+      self.apos.docs.find({ res: {} }, { type: 'restaurant' }, { _id: 1 }) // look for existing restaurants
+      .published(null) // without checking if published
+      .permission(false) // without checking user permissions
+      .toArray(async (err, pieces) => { // Apostrophe cursor to grab pieces
         if (err) throw err
 
-        if (pieces.length === 0) {
+        if (pieces.length === 0) { // if no restaraunt in DB
           try {
-            const data = await read()
-            await insert(data)
+            await read() // asynchronously read json file
           } catch (err) {
             throw err
           }
         }
       })
-
+      
       const read = () => {
         new Promise((resolve, reject) => {
           const rl = readline.createInterface({
             input: fs.createReadStream(path.resolve(__dirname, './data.json'))
           });
-
-          rl.on('line', async line => {
+          
+          // read line by line
+          rl.on('line', line => {
             let data = JSON.parse(line)
+            
+            // add needed fields for Apostrophe
             data.type = 'restaurant'
             data.title = data.name
             data.slug = self.apos.utils.slugify(data.name)
             data.published = true
-
-            await insert(data)
+            
+            insert(data) 
           })
 
           rl.on('close', () => resolve())
@@ -206,20 +208,28 @@ module.exports = {
 
       const insert = data => {
         if (data) {
-          new Promise((resolve, reject) => {
-            self.apos.docs.insert({}, data, { permissions: false}, (err, data) => {
-              if (err) reject(err)
-              resolve()
-            })
+          // insert data with an empty req and without checking permissions
+          self.apos.docs.insert({}, data, { permissions: false}, (err, data) => {
+            if (err) throw err
           })
         }
       }
     }
   }
-};
+}
 ```
 
+Que fait-on ici ? On utilise les événements Apostrophe : `construct` et `self.afterInit`sont des méthodes du cycle de vie Apostrophe. On commence par rechercher si des documents de type "restaurant" existent \(selon la méthode des curseurs préconisée dans le tutoriel Apostrophe\), sinon on lit le fichier de données et on insère les données \(toujours la méthode des curseurs\).
 
+Dernière étape : ajouter le module "data" dans app.js pour l'activer :
 
+```js
+    // Add your modules and their respective configuration here!
+    'restaurant': {},
+    'data': {}
+```
 
+En cliquant sur "Restaurants" dans la barre d'administration, on voit maintenant apparaitre les données parce que leur structure correspond au schéma défini dans le module "restaurant".
+
+![](/assets/restaurants_modal.png)
 
