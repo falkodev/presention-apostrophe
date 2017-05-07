@@ -182,23 +182,23 @@ module.exports = {
           }
         }
       })
-      
+
       const read = () => {
         new Promise((resolve, reject) => {
           const rl = readline.createInterface({
             input: fs.createReadStream(path.resolve(__dirname, './data.json'))
           });
-          
+
           // read line by line
           rl.on('line', line => {
             let data = JSON.parse(line)
-            
+
             // add needed fields for Apostrophe
             data.type = 'restaurant'
             data.title = data.name
             data.slug = self.apos.utils.slugify(data.name)
             data.published = true
-            
+
             insert(data) 
           })
 
@@ -219,17 +219,92 @@ module.exports = {
 }
 ```
 
-Que fait-on ici ? On utilise les événements Apostrophe : `construct` et `self.afterInit`sont des méthodes du cycle de vie Apostrophe. On commence par rechercher si des documents de type "restaurant" existent \(selon la méthode des curseurs préconisée dans le tutoriel Apostrophe\), sinon on lit le fichier de données et on insère les données \(toujours la méthode des curseurs\).
+Que fait-on ici ? On utilise les événements Apostrophe : `construct` et `self.afterInit`sont des méthodes du cycle de vie du CMS. On commence par rechercher si des documents de type "restaurant" existent \(selon la méthode des curseurs préconisée dans le tutoriel Apostrophe\), sinon on lit le fichier de données et on insère les données \(toujours la méthode des curseurs\).
 
 Dernière étape : ajouter le module "data" dans app.js pour l'activer :
 
 ```js
-    // Add your modules and their respective configuration here!
-    'restaurant': {},
-    'data': {}
+// Add your modules and their respective configuration here!
+'restaurant': {},
+'data': {}
 ```
 
 En cliquant sur "Restaurants" dans la barre d'administration, on voit maintenant apparaitre les données parce que leur structure correspond au schéma défini dans le module "restaurant".
 
 ![](/assets/restaurants_modal.png)
+
+Les utilisateurs connectés \(auteurs\) auront la possibilité d'éditer ces "pieces", d'en ajouter, d'en supprimer. Nous allons maintenant afficher la liste des restaurants pour qu'elle soit accessible à l'ensemble des utilisateurs du site. Dans cette optique, il faut un module qui étendra "apostrophe-pieces-pages", qui comme son nom l'indique est fait pour afficher des pieces sur des pages. 2 sortes de pages sont disponibles par défaut :
+
+* index : pour lister les produits
+* show : pour afficher le détail d'un produit
+
+Créons le dossier "restaurant-pages", Apostrophe sait qu'il servira à afficher des pièces de type "restaurant". On l'active dans app.js avec une configuration particulière. Il faut aussi activer un nouveau type de page pour créer une page de restaurants. Voici la version de app.js correspondante : 
+
+```js
+var apos = require('apostrophe')({
+  shortName: 'test-project',
+  title: 'test-project',
+
+  // These are the modules we want to bring into the project.
+  modules: {
+    // This configures the apostrophe-users module to add an admin-level
+    // group by default
+    'apostrophe-users': {
+      groups: [
+        {
+          title: 'guest',
+          permissions: [ ]
+        },
+        {
+          title: 'admin',
+          permissions: [ 'admin' ]
+        }
+      ]
+    },
+    // This configures the apostrophe-assets module to push a 'site.less'
+    // stylesheet by default
+    'apostrophe-assets': {
+      stylesheets: [
+        {
+          name: 'site'
+        }
+      ]
+    },
+    'apostrophe-pages': {
+      types: [
+        // Default page types
+        {
+          name: 'default',
+          label: 'Default'
+        },
+        {
+          name: 'home',
+          label: 'Home'
+        },
+        // Custom page type
+        {
+          name: 'restaurant-page', // caution: singular type
+          label: 'Restaurant'
+        }
+      ]
+    },
+    // Add your modules and their respective configuration here!
+    'restaurant': {},
+    'restaurant-pages': { // plural type
+      extend: 'apostrophe-pieces-pages'
+    },
+    'data': {}
+  }
+});
+```
+
+On peut désormais cliquer sur le menu "New Page" dans "Page Menu" pour voir apparaitre la fenêtre modale de création de page : 
+
+![](/assets/page_menu.png)
+
+Le nouveau type de page "Restaurant" apparait : 
+
+![](/assets/new_page_type.png)
+
+Avant qu'un auteur puisse créer une page de ce type, il faut définir les templates en créant un dossier "views" dans "restaurant-pages" puis à l'intérieur 2 fichiers : index.html et show.html.
 
