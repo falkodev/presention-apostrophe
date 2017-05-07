@@ -90,7 +90,7 @@ Ici, nous définissons une "piece" apostrophe, c'est-à-dire un document MongoDB
 * un type de cuisine,
 * un nom. 
 
-Et aussi un type tableau, contenu 0, 1 ou plusieurs notes. Chaque note contient une date, un niveau et un score.
+Et aussi un type tableau, contenant 0, 1 ou plusieurs notes. Chaque note contient une date, un niveau et un score.
 
 Pour rendre ce module actif, il faut éditer le fichier "app.js" à la racine du projet :
 
@@ -134,7 +134,7 @@ On a simplement ajouté la dernière ligne : `'restaurant': {}`Ce faisant, Apost
 
 ![](/assets/admin_bar.png)
 
-Si on clique sur l'entrée "Resturants", pour l'instant aucun document à l'intérieur. Nous allons maintenant ajouter de la donnée.
+Si on clique sur l'entrée "Restaurants", pour l'instant aucun document n'est présent à l'intérieur. Nous allons maintenant ajouter de la donnée.
 
 Créons un dossier "data" dans lib, et ajoutons-y un fichier data.json avec ces données :
 
@@ -145,7 +145,7 @@ Créons un dossier "data" dans lib, et ajoutons-y un fichier data.json avec ces 
 {"address": "2780 Stillwell Avenue", "borough": "Brooklyn", "cuisine": "American", "grades": [{"date": "01/01/2017", "grade": "A", "score": 5}, {"date": "01/01/2017", "grade": "A", "score": 7}, {"date": "01/01/2017", "grade": "A", "score": 12}, {"date": "01/01/2017", "grade": "A", "score": 12}], "name": "Riviera Caterer"}
 ```
 
-Toujours dans ce dossier "data", nous allons créer un fichier index.js dont la fonction sera de parser les données pour l'insérer en base.
+Toujours dans ce dossier "data", nous allons créer un fichier "index.js" dont la fonction sera de parser les données pour l'insérer en base.
 
 Pour visualiser l'état de notre base, personnellement j'utilise 3T Studio, mais n'importe quel client Mongo fera l'affaire, même le shell de base.
 
@@ -221,7 +221,7 @@ module.exports = {
 
 Que fait-on ici ? On utilise les événements Apostrophe : `construct` et `self.afterInit`sont des méthodes du cycle de vie du CMS. On commence par rechercher si des documents de type "restaurant" existent \(selon la méthode des curseurs préconisée dans le tutoriel Apostrophe\), sinon on lit le fichier de données et on insère les données \(toujours la méthode des curseurs\).
 
-Dernière étape : ajouter le module "data" dans app.js pour l'activer :
+Dernière étape : ajouter le module "data" dans app.js pour l'activer et sauvegarder \(ce qui doit redémarrer l'appli avec nodemon\) :
 
 ```js
 // Add your modules and their respective configuration here!
@@ -238,7 +238,7 @@ Les utilisateurs connectés \(auteurs\) auront la possibilité d'éditer ces "pi
 * index : pour lister les produits
 * show : pour afficher le détail d'un produit
 
-Créons le dossier "restaurant-pages", Apostrophe sait qu'il servira à afficher des pièces de type "restaurant". On l'active dans app.js. Il faut aussi activer un nouveau type de page pour créer une page de restaurants. Voici la version de app.js correspondante :
+Créons le dossier "restaurant-pages", Apostrophe sait qu'il servira à afficher des pièces de type "restaurant". On l'active dans app.js. Il faut aussi activer un nouveau type de page pour créer une page de restaurants. Voici la version de "app.js" correspondante :
 
 ```js
 var apos = require('apostrophe')({
@@ -296,7 +296,7 @@ var apos = require('apostrophe')({
 });
 ```
 
-Enfin, on crée le fichier "index.js" dans "restaurant-pages" avec ce contenu : 
+Enfin, on crée le fichier "index.js" dans "restaurant-pages" avec ce contenu :
 
 ```js
 module.exports = {
@@ -308,13 +308,11 @@ On peut désormais cliquer sur le menu "New Page" dans "Page Menu" pour voir app
 
 ![](/assets/page_menu.png)
 
-Le nouveau type de page "Restaurant" apparait :
+Le nouveau type de page "Restaurant" est bien là :
 
 ![](/assets/new_page_type.png)
 
 Avant qu'un auteur puisse créer une page de ce type, il faut définir les templates en créant un dossier "views" dans "restaurant-pages" puis à l'intérieur 2 fichiers : index.html et show.html.
-
-
 
 index.html :
 
@@ -337,9 +335,7 @@ index.html :
 {% endblock %}
 ```
 
-
-
-show.html : 
+show.html :
 
 ```html
 {% extends data.outerLayout %}
@@ -372,13 +368,11 @@ show.html :
 
 Les templates sont au format [Nunjucks](https://mozilla.github.io/nunjucks/) dans ce CMS.
 
-Un auteur pourra désormais créer une page /restaurants et les pages de liste et de détail sont déjà prêtes. 
+Un auteur pourra désormais créer une page /restaurants et les pages de liste et de détail sont déjà prêtes.
 
 ![](/assets/new_page.png)
 
-Enfin prêtes..elles affichent des informations. Concernant le style, c'est celui de base, c'est donc très banal. Si on voulait styliser ces 2 pages, on pourrait créer un dossier "public" dans "restaurant-pages" qui lui même contiendrait un dossier "css" avec des fichiers .less. On pourrait aussi ajouter des fichiers .less dans le dossier "apostrophe-assets" pour des styles globaux.
-
-Si on veut laisser à l'auteur la possiblité d'aller plus loin dans la personnalisation, on peut créer des areas. Par exemple, dans show.html, on pourrait laisser la possibilité d'ajouter des paragraphes de texte, des images, des vidéos en ajoutant ceci dans show.html après le dernier `</ul>`:
+Si on veut laisser à l'auteur la possiblité d'aller plus loin dans la personnalisation, on peut créer des areas. Par exemple, on pourrait laisser la possibilité d'ajouter des paragraphes de texte, des images, des vidéos en ajoutant ceci dans "show.html" après le dernier `</ul>`:
 
 ```html
 {{ apos.area(data.piece, 'additionalField', {
@@ -396,7 +390,7 @@ Avec cette area nommée "additionalField, l'auteur pourra ajouter autant d'élem
 
 ![](/assets/additional-widgets.png)
 
-Un exemple de stylisation sera de modifier la taille de l'image. On va donc créer dans "restaurant-pages" un dossier "public", puis à l'intérieur un fichier "image.less" avec ce contenu : 
+Un exemple de stylisation sera de modifier la taille de l'image. On va donc créer dans "restaurant-pages" un dossier "public", puis à l'intérieur un fichier "image.less" avec ce contenu :
 
 ```css
 .apos-slideshow {
@@ -416,8 +410,8 @@ module.exports = {
   construct: function (self, options) {
     self.pushAsset('stylesheet', 'image', { scene: 'always' })
   }
-} 
+}
 ```
 
-Voilà pas mal d'éléments pour prendre en main Apostrophe rapidement. Si une question, n'hésitez pas à créer une issue sur le [repository github de cet article.](https://github.com/falkodev/presention-apostrophe)
+Voilà pas mal d'éléments pour prendre en main Apostrophe rapidement. En cas de question, n'hésitez pas à créer une issue sur le [repository github de cet article.](https://github.com/falkodev/presention-apostrophe)
 
