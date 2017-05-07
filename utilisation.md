@@ -238,7 +238,7 @@ Les utilisateurs connectés \(auteurs\) auront la possibilité d'éditer ces "pi
 * index : pour lister les produits
 * show : pour afficher le détail d'un produit
 
-Créons le dossier "restaurant-pages", Apostrophe sait qu'il servira à afficher des pièces de type "restaurant". On l'active dans app.js avec une configuration particulière. Il faut aussi activer un nouveau type de page pour créer une page de restaurants. Voici la version de app.js correspondante : 
+Créons le dossier "restaurant-pages", Apostrophe sait qu'il servira à afficher des pièces de type "restaurant". On l'active dans app.js. Il faut aussi activer un nouveau type de page pour créer une page de restaurants. Voici la version de app.js correspondante :
 
 ```js
 var apos = require('apostrophe')({
@@ -290,21 +290,134 @@ var apos = require('apostrophe')({
     },
     // Add your modules and their respective configuration here!
     'restaurant': {},
-    'restaurant-pages': { // plural type
-      extend: 'apostrophe-pieces-pages'
-    },
+    'restaurant-pages': {},
     'data': {}
   }
 });
 ```
 
-On peut désormais cliquer sur le menu "New Page" dans "Page Menu" pour voir apparaitre la fenêtre modale de création de page : 
+Enfin, on crée le fichier "index.js" dans "restaurant-pages" avec ce contenu : 
+
+```js
+module.exports = {
+  extend: 'apostrophe-pieces-pages'
+}
+```
+
+On peut désormais cliquer sur le menu "New Page" dans "Page Menu" pour voir apparaitre la fenêtre modale de création de page :
 
 ![](/assets/page_menu.png)
 
-Le nouveau type de page "Restaurant" apparait : 
+Le nouveau type de page "Restaurant" apparait :
 
 ![](/assets/new_page_type.png)
 
 Avant qu'un auteur puisse créer une page de ce type, il faut définir les templates en créant un dossier "views" dans "restaurant-pages" puis à l'intérieur 2 fichiers : index.html et show.html.
+
+
+
+index.html :
+
+```html
+{% extends data.outerLayout %}
+
+{% block title %}{{ data.page.title }}{% endblock %}
+
+{% block main %}
+  <div style="margin-top: 90px; margin-left: 20px">
+    <h2><a href="{{ data.home._url }}">{{ data.home.title }}</a></h2><br />
+
+    <h2>Liste des restaurants</h2><br/>
+    {% for piece in data.pieces %}
+      <h4><a href="{{ piece._url }}">{{ piece.title }}</a></h4>
+    {% endfor %}
+  </div>
+  {% import 'apostrophe-pager:macros.html' as pager with context %}
+  {{ pager.render({ page: data.currentPage, total: data.totalPages }, data.url) }}
+{% endblock %}
+```
+
+
+
+show.html : 
+
+```html
+{% extends data.outerLayout %}
+
+{% block title %}{{ data.piece.title }}{% endblock %}
+
+{% block main %}
+  <div style="margin-top: 90px; margin-left: 20px">
+    <h2><a href="{{ data.page._url }}">Retour à la liste des restaurants</a></h2><br />
+    <h2>Détail du restaurant {{ data.piece.name }}</h2><br/>
+    <ul>
+      <li>Adresse: {{ data.piece.address }}</li>
+      <li>Quartier: {{ data.piece.borough }}</li>
+      <li>Type de cuisine: {{ data.piece.cuisine }}</li>
+      <li>Evaluations:
+        <ul>
+          {% for grade in data.piece.grades %}
+            <li>&nbsp;&nbsp;-&nbsp;Evaluation n°{{ loop.index }}</li>
+            <li>&nbsp;&nbsp;&nbsp;&nbsp;Date: {{ grade.date }}</li>
+            <li>&nbsp;&nbsp;&nbsp;&nbsp;Niveau: {{ grade.grade }}</li>
+            <li>&nbsp;&nbsp;&nbsp;&nbsp;Note: {{ grade.score }}</li>
+            <br/>
+          {% endfor %}
+        </ul>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+```
+
+Les templates sont au format [Nunjucks](https://mozilla.github.io/nunjucks/) dans ce CMS.
+
+Un auteur pourra désormais créer une page /restaurants et les pages de liste et de détail sont déjà prêtes. 
+
+![](/assets/new_page.png)
+
+Enfin prêtes..elles affichent des informations. Concernant le style, c'est celui de base, c'est donc très banal. Si on voulait styliser ces 2 pages, on pourrait créer un dossier "public" dans "restaurant-pages" qui lui même contiendrait un dossier "css" avec des fichiers .less. On pourrait aussi ajouter des fichiers .less dans le dossier "apostrophe-assets" pour des styles globaux.
+
+Si on veut laisser à l'auteur la possiblité d'aller plus loin dans la personnalisation, on peut créer des areas. Par exemple, dans show.html, on pourrait laisser la possibilité d'ajouter des paragraphes de texte, des images, des vidéos en ajoutant ceci dans show.html après le dernier `</ul>`:
+
+```html
+{{ apos.area(data.piece, 'additionalField', {
+  widgets: {
+    'apostrophe-rich-text': {
+      toolbar: [ 'Bold', 'Italic', 'Link', 'Unlink' ]
+    },
+    'apostrophe-images': {},
+    'apostrophe-video': {}
+  }
+}) }}
+```
+
+Avec cette area nommée "additionalField, l'auteur pourra ajouter autant d'élements de ces 3 widgets qu'il souhaite et réordonner ces éléments entre eux.
+
+![](/assets/additional-widgets.png)
+
+Un exemple de stylisation sera de modifier la taille de l'image. On va donc créer dans "restaurant-pages" un dossier "public", puis à l'intérieur un fichier "image.less" avec ce contenu : 
+
+```css
+.apos-slideshow {
+  .apos-slideshow-item {
+    img {
+      width: initial;
+    }
+  }
+}
+```
+
+Ensuite, il faut dire à Apostrophe d'importer ce nouveau fichier de style en modifiant le fichier index.js de "restaurant-pages" comme ceci :
+
+```js
+module.exports = {
+  extend: 'apostrophe-pieces-pages',
+  construct: function (self, options) {
+    self.pushAsset('stylesheet', 'image', { scene: 'always' })
+  }
+} 
+```
+
+Voilà pas mal d'éléments pour prendre en main Apostrophe rapidement. Si une question, n'hésitez pas à créer une issue sur le [repository github de cet article.](https://github.com/falkodev/presention-apostrophe)
 
