@@ -24,9 +24,128 @@ On peut désormais relancer `npm start`
 
 Je propose de créer une application de gestion de produits. Le but sera de lister les produits dans une première page, puis d'afficher le détail d'un produit dans une seconde. En tant que développeur, on laissera la main à un futur auteur d'ajouter, de modifier, de supprimer des produits, et même de créer des pages et d'y ajouter du contenu texte, image ou vidéo.
 
-Pour démarrer il nous faut de la donnée.
+Pour démarrer, il nous faut définir une structure de donnée. Je me suis inspiré de la base de données test de MongoDB "restaurants". Nous allons donc gérer des restaurants, qui auront des notes attribuées en fonction d'avis clients.
 
-Créons un dossier "data" dans lib, et ajoutons-y un fichier data.json avec ces données : [https://raw.githubusercontent.com/mongodb/docs-assets/primer-dataset/primer-dataset.json](https://raw.githubusercontent.com/mongodb/docs-assets/primer-dataset/primer-dataset.json) \(il s'agit de la base de test de MongoDB qui contient une liste de restaurants\). Toujours dans ce dossier "data", nous allons créer un fichier index.js dont la fonction sera de parser les données pour l'insérer en base.
+Pour modéliser ces données, il faut créer un module Apostrophe. Pour cela, créons un dossier "restaurant" dans "lib", et insérons un fichier "index.js" avec ce contenu : 
+
+```js
+module.exports = {
+  extend: 'apostrophe-pieces',
+  name: 'restaurant',
+  label: 'Restaurant',
+  addFields: [
+    {
+      name: 'address',
+      label: 'Address',
+      type: 'string',
+      required: true
+    }, {
+      name: 'borough',
+      label: 'Borough',
+      type: 'string',
+      required: true
+    }, {
+      name: 'cuisine',
+      label: 'Cuisine',
+      type: 'string',
+      required: true
+    }, {
+      name: 'grades',
+      label: 'Grades',
+      type: 'array',
+      schema: [
+        {
+          name: 'date',
+          label: 'Date',
+          type: 'string',
+          required: true
+        },
+        {
+          name: 'grade',
+          label: 'Grade',
+          type: 'string',
+          required: true
+        },
+        {
+          name: 'score',
+          label: 'Score',
+          type: 'integer',
+          required: true
+        }
+      ]
+    }, {
+      name: 'name',
+      label: 'Name',
+      type: 'string',
+      required: true
+    }
+  ]
+}
+```
+
+Ici, nous définissons une "piece" apostrophe, c'est-à-dire un document MongoDB qui sera de type "restaurant" \(donné par la propriété "name", ligne 3\). A l'intérieur, des champs de type chaine de caractères et obligatoirement remplis : 
+
+* une adresse,
+* le quartier de New-York,
+* un type de cuisine,
+* un nom. 
+
+Et aussi un type tableau, contenu 0, 1 ou plusieurs notes. Chaque note contient une date, un niveau et un score.
+
+Pour rendre ce module actif, il faut éditer le fichier "app.js" à la racine du projet :
+
+```js
+var apos = require('apostrophe')({
+  shortName: 'test-project',
+  title: 'test-project',
+
+  // These are the modules we want to bring into the project.
+  modules: {
+    // This configures the apostrophe-users module to add an admin-level
+    // group by default
+    'apostrophe-users': {
+      groups: [
+        {
+          title: 'guest',
+          permissions: [ ]
+        },
+        {
+          title: 'admin',
+          permissions: [ 'admin' ]
+        }
+      ]
+    },
+    // This configures the apostrophe-assets module to push a 'site.less'
+    // stylesheet by default
+    'apostrophe-assets': {
+      stylesheets: [
+        {
+          name: 'site'
+        }
+      ]
+    },
+    // Add your modules and their respective configuration here!
+    'restaurant': {}
+  }
+});
+```
+
+On a simplement ajouté la dernière ligne : `'restaurant': {}`Ce faisant, Apostrophe sait qu'il doit gérer un nouveau type de pièce. En se logguant \(avec le compte admin créé lors du tutoriel officiel Apostrophe\), on peut voir une nouvelle entrée dans la barre d'administration : Restaurants \(oui, Apostrophe a ajouté tout seul le "s" final à "Restaurants" en se basant sur le label déclaré dans le module que nous venons de créer. Il est d'ailleurs possible de passer un autre pluriel si nécessaire avec l'option pluralLabel dans ce même module\) :
+
+![](/assets/admin_bar.png)
+
+Si on clique sur l'entrée "Resturants", pour l'instant aucun document à l'intérieur. Nous allons maintenant ajouter de la donnée.
+
+Créons un dossier "data" dans lib, et ajoutons-y un fichier data.json avec ces données : 
+
+```json
+{"address": "1007 Morris Park Ave", "borough": "Bronx", "cuisine": "Bakery", "grades": [{"date": "01/01/2017", "grade": "A", "score": 2}, {"date": "01/01/2017", "grade": "A", "score": 6}, {"date": "01/01/2017", "grade": "A", "score": 10}, {"date": "01/01/2017", "grade": "A", "score": 9}, {"date": "01/01/2017", "grade": "B", "score": 14}], "name": "Morris Park Bake Shop"}
+{"address": "469 Flatbush Avenue", "borough": "Brooklyn", "cuisine": "Hamburgers", "grades": [{"date": "01/01/2017", "grade": "A", "score": 8}, {"date": "01/01/2017", "grade": "B", "score": 23}, {"date": "01/01/2017", "grade": "A", "score": 12}, {"date": "01/01/2017", "grade": "A", "score": 12}], "name": "Wendy'S"}
+{"address": "351 West Street", "borough": "Manhattan", "cuisine": "Irish", "grades": [{"date": "01/01/2017", "grade": "A", "score": 2}, {"date": 1374451200000, "grade": "A", "score": 11}, {"date": "01/01/2017", "grade": "A", "score": 12}, {"date": "01/01/2017", "grade": "A", "score": 12}], "name": "Dj Reynolds Pub And Restaurant"}
+{"address": "2780 Stillwell Avenue", "borough": "Brooklyn", "cuisine": "American", "grades": [{"date": "01/01/2017", "grade": "A", "score": 5}, {"date": "01/01/2017", "grade": "A", "score": 7}, {"date": "01/01/2017", "grade": "A", "score": 12}, {"date": "01/01/2017", "grade": "A", "score": 12}], "name": "Riviera Caterer"}
+```
+
+Toujours dans ce dossier "data", nous allons créer un fichier index.js dont la fonction sera de parser les données pour l'insérer en base.
 
 Pour visualiser l'état de notre base, personnellement j'utilise 3T Studio, mais n'importe quel client Mongo fera l'affaire, même le shell de base.
 
@@ -38,7 +157,69 @@ Par exemple, ici, c'est un document de type "apostrophe-user":
 
 ![](/assets/type_user.png)
 
-Retournons dans le fichier lib/data/index.js et ajoutons-y ce code:
+Retournons dans le fichier lib/data/index.js et ajoutons-y ce code :
+
+```js
+const fs = require('fs')
+const path = require('path')
+const readline = require('readline')
+
+module.exports = {
+  construct: (self, options) => {
+
+    self.afterInit = () => {
+      self.apos.docs.find({ res: {} }, { type: 'restaurant' }, { _id: 1 })
+      .published(null)
+      .permission(false)
+      .toArray(async (err, pieces) => {
+        if (err) throw err
+
+        if (pieces.length === 0) {
+          try {
+            const data = await read()
+            await insert(data)
+          } catch (err) {
+            throw err
+          }
+        }
+      })
+
+      const read = () => {
+        new Promise((resolve, reject) => {
+          const rl = readline.createInterface({
+            input: fs.createReadStream(path.resolve(__dirname, './data.json'))
+          });
+
+          rl.on('line', async line => {
+            let data = JSON.parse(line)
+            data.type = 'restaurant'
+            data.title = data.name
+            data.slug = self.apos.utils.slugify(data.name)
+            data.published = true
+
+            await insert(data)
+          })
+
+          rl.on('close', () => resolve())
+        })
+      }
+
+      const insert = data => {
+        if (data) {
+          new Promise((resolve, reject) => {
+            self.apos.docs.insert({}, data, { permissions: false}, (err, data) => {
+              if (err) reject(err)
+              resolve()
+            })
+          })
+        }
+      }
+    }
+  }
+};
+```
+
+
 
 
 
