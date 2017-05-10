@@ -384,6 +384,8 @@ Un auteur pourra désormais créer une page /restaurants et les pages de liste e
 
 ![](/assets/new_page.png)
 
+### Navigation
+
 Ajoutons un lien sur la page d'accueil pour naviguer vers la page des restaurants en éditant le fichier lib/modules/apostrophe-pages/views/pages/home.html :
 
 ```html
@@ -402,7 +404,6 @@ Ajoutons un lien sur la page d'accueil pour naviguer vers la page des restaurant
     </p>
   </div>
 {% endblock %}
-
 ```
 
 Après rechargement de localhost:3000, la page d'acceuil ressemblera à ceci : ![](/assets/new_home.png)
@@ -414,6 +415,10 @@ En cliquant sur le lien, on arrivera sur l'url localhost:3000/restaurants :
 Et en naviguant vers un des restaurants :
 
 ![](/assets/detail.png)
+
+
+
+### Widgets
 
 Si on veut laisser à l'auteur la possiblité d'aller plus loin dans la personnalisation, on peut créer des areas. Par exemple, on pourrait laisser la possibilité d'ajouter des paragraphes de texte, des images, des vidéos en ajoutant ceci dans "show.html" après le dernier `</ul>`:
 
@@ -429,7 +434,7 @@ Si on veut laisser à l'auteur la possiblité d'aller plus loin dans la personna
 }) }}
 ```
 
-On verra apparaitre \(en étant loggué\) un petit "+" vert sur la page, nous permettant d'ajouter des widgets : 
+On verra apparaitre \(en étant loggué\) un petit "+" vert sur la page, nous permettant d'ajouter des widgets :
 
 ![](/assets/detail_widget.png)
 
@@ -440,6 +445,8 @@ En cliquant sur ce "+", on voit la liste des widgets disponibles, qui correspond
 L'auteur pourra ajouter autant d'élements de ces 3 widgets qu'il souhaite et réordonner ces éléments entre eux.
 
 ![](/assets/additional-widgets.png)
+
+### Ajout de styles
 
 Un exemple de stylisation sera de modifier la taille de l'image. On va donc créer dans "restaurant-pages" un dossier "public", puis à l'intérieur un fichier "image.less" avec ce contenu :
 
