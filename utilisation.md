@@ -241,7 +241,7 @@ En cliquant sur "Restaurants" dans la barre d'administration, on voit maintenant
 
 ![](/assets/restaurants_modal.png)
 
-### Affichage des données
+## Templates
 
 Les utilisateurs connectés \(auteurs\) auront la possibilité d'éditer ces "pieces", d'en ajouter, d'en supprimer. Nous allons maintenant afficher la liste des restaurants pour qu'elle soit accessible à l'ensemble des utilisateurs du site. Dans cette optique, il faut un module qui étendra "apostrophe-pieces-pages", qui comme son nom l'indique est fait pour afficher des pieces sur des pages. 2 sortes de pages sont disponibles par défaut :
 
@@ -346,8 +346,6 @@ index.html :
 ```
 
 On peut noter la gestion de la pagination par Apostrophe avec la macro "pager" à la fin du template index.
-
-
 
 show.html :
 
