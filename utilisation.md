@@ -380,9 +380,40 @@ show.html :
 
 Les templates sont au format [Nunjucks](https://mozilla.github.io/nunjucks/) dans ce CMS.
 
-Un auteur pourra désormais créer une page /restaurants et les pages de liste et de détail sont déjà prêtes.
+Un auteur pourra désormais créer une page /restaurants et les pages de liste et de détail sont déjà prêtes. Créons cette page de la manière suivante :
 
 ![](/assets/new_page.png)
+
+Ajoutons un lien sur la page d'accueil pour naviguer vers la page des restaurants en éditant le fichier lib/modules/apostrophe-pages/views/pages/home.html :
+
+```html
+{% extends data.outerLayout %}
+
+{% block title %}Home{% endblock %}
+{% block main %}
+  <div class="main-content">
+    <h3>Répertoire de restaurants
+      {% if not data.user %}
+        <a class="login-link" href="/login">Login</a>
+      {% endif %}
+    </h3>
+    <p>
+      <a href="/restaurants">Liste des restaurants</as
+    </p>
+  </div>
+{% endblock %}
+
+```
+
+Après rechargement de localhost:3000, la page d'acceuil ressemblera à ceci : ![](/assets/new_home.png)
+
+En cliquant sur le lien, on arrivera sur l'url localhost:3000/restaurants :
+
+![](/assets/listing.png)
+
+Et en naviguant vers un des restaurants :
+
+![](/assets/detail.png)
 
 Si on veut laisser à l'auteur la possiblité d'aller plus loin dans la personnalisation, on peut créer des areas. Par exemple, on pourrait laisser la possibilité d'ajouter des paragraphes de texte, des images, des vidéos en ajoutant ceci dans "show.html" après le dernier `</ul>`:
 
@@ -398,7 +429,15 @@ Si on veut laisser à l'auteur la possiblité d'aller plus loin dans la personna
 }) }}
 ```
 
-Avec cette area nommée "additionalField", l'auteur pourra ajouter autant d'élements de ces 3 widgets qu'il souhaite et réordonner ces éléments entre eux.
+On verra apparaitre \(en étant loggué\) un petit "+" vert sur la page, nous permettant d'ajouter des widgets : 
+
+![](/assets/detail_widget.png)
+
+En cliquant sur ce "+", on voit la liste des widgets disponibles, qui correspond aux widgets qu'on vient d'ajouter dans show.html :
+
+![](/assets/widgets.png)
+
+L'auteur pourra ajouter autant d'élements de ces 3 widgets qu'il souhaite et réordonner ces éléments entre eux.
 
 ![](/assets/additional-widgets.png)
 
