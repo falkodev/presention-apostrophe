@@ -322,7 +322,7 @@ Le nouveau type de page "Restaurant" est bien là :
 
 ![](/assets/new_page_type.png)
 
-Avant qu'un auteur puisse créer une page de ce type, on peut surcharger les templates : par défaut, Apostrophe affichera les templates index.html \(pour le listing des produits\) et show.html \(pour le détail d'un produit\). Mais on veut personnaliser un minimum l'affichage, nous créons donc un dossier "views" dans "restaurant-pages" puis à l'intérieur 2 fichiers : index.html et show.html.
+Avant qu'un auteur puisse créer une page de ce type, on peut surcharger les templates : par défaut, Apostrophe affichera les templates index.html \(pour le listing des produits\) et show.html \(pour le détail d'un produit\) de son module interne. Mais on veut personnaliser un minimum l'affichage, nous créons donc un dossier "views" dans "restaurant-pages" puis à l'intérieur 2 fichiers : index.html et show.html.
 
 index.html :
 
