@@ -4,9 +4,11 @@ Rien de mieux qu'une petite démo pour montrer la prise en main d'Apostrophe. Po
 
 A noter que des collègues sur Windows ont eu des difficultés avec Node. Dans la mesure du possible, un MacOs ou un Linux est préférable. D'une manière générale, suivre le tutoriel officiel d'Apostrophe constitue une bonne introduction aux possibilités du framework. Toutefois, plusieurs personnes autour de moi \(ainsi que moi-même\) ont trouvé ce tutoriel un peu confus. C'est pour clarifier cela que j'ai décidé de créer cet article.
 
+## Création d'un projet
+
 Nous allons créer un projet test tel que décrit ici : [http://apostrophecms.org/docs/tutorials/getting-started/creating-your-first-project.html](http://apostrophecms.org/docs/tutorials/getting-started/creating-your-first-project.html)
 
-Pour démarrer l'application, il faut lancer une ligne de commande : `node app.js` ou `npm start`\(puisque "npm start" lance en fait "node app.js"\). Mais comme à chaque modification d'un fichier, il faudra couper l'appli et relancer la ligne de commande. Pour pallier ce problème, j'aime bien installer nodemon, qui s'occupera de surveiller les modifications sur des types de fichier précis, et redémarrera l'appli comme un grand.
+Pour démarrer l'application, il faut lancer une ligne de commande : `node app.js` ou `npm start`\(puisque "npm start" lance en fait "node app.js"\). Mais à chaque modification d'un fichier, il faudra couper l'appli et relancer la ligne de commande. Pour pallier ce problème, j'aime bien installer nodemon, qui s'occupera de surveiller les modifications sur des types de fichier précis, et redémarrera l'appli comme un grand.
 
 `npm install nodemon --save-dev`ou `yarn add nodemon --dev` pour ceux qui utilisent déjà yarn sur d'autres projets \(ce que je préfère\).
 
@@ -24,7 +26,11 @@ On peut désormais relancer `npm start`
 
 Je propose de créer une application de gestion de produits. Le but sera de lister les produits dans une première page, puis d'afficher le détail d'un produit dans une seconde. En tant que développeur, on laissera la main à un futur auteur d'ajouter, de modifier, de supprimer des produits, et même de créer des pages et d'y ajouter du contenu texte, image ou vidéo.
 
+## Données
+
 Pour démarrer, il nous faut définir une structure de donnée. Je me suis inspiré de la base de données test de MongoDB "restaurants". Nous allons donc gérer des restaurants, qui auront des notes attribuées en fonction d'avis clients.
+
+### Structure des données
 
 Pour modéliser ces données, il faut créer un module Apostrophe. Pour cela, créons un dossier "restaurant" dans "lib", et insérons un fichier "index.js" avec ce contenu :
 
@@ -83,7 +89,7 @@ module.exports = {
 }
 ```
 
-Ici, nous définissons une "piece" apostrophe, c'est-à-dire un document MongoDB qui sera de type "restaurant" \(donné par la propriété "name", ligne 3\). A l'intérieur, des champs de type chaine de caractères et obligatoirement remplis :
+Ici, nous définissons une "piece" apostrophe selon un "schema", c'est-à-dire un document MongoDB qui sera de type "restaurant" \(donné par la propriété "name", ligne 3\). A l'intérieur, des champs de type chaine de caractères et obligatoirement remplis :
 
 * une adresse,
 * le quartier de New-York,
@@ -130,13 +136,13 @@ var apos = require('apostrophe')({
 });
 ```
 
-On a simplement ajouté la dernière ligne : `'restaurant': {}`Ce faisant, Apostrophe sait qu'il doit gérer un nouveau type de pièce. En se logguant \(avec le compte admin créé lors du tutoriel officiel Apostrophe\), on peut voir une nouvelle entrée dans la barre d'administration : Restaurants \(oui, Apostrophe a ajouté tout seul le "s" final à "Restaurants" en se basant sur le label déclaré dans le module que nous venons de créer. Il est d'ailleurs possible de passer un autre pluriel si nécessaire avec l'option pluralLabel dans ce même module\) :
+On a simplement ajouté la dernière ligne : `'restaurant': {}`Ce faisant, Apostrophe sait qu'il doit gérer un nouveau type de pièce. En se logguant \(avec le compte admin créé lors du tutoriel officiel Apostrophe\), on peut voir une nouvelle entrée dans la barre d'administration : Restaurants \(oui, Apostrophe a ajouté tout seul le "s" final à "Restaurants" en se basant sur le label déclaré dans le module que nous venons de créer. Il est d'ailleurs possible de passer un autre pluriel si nécessaire avec l'option "pluralLabel" dans ce même module\) :
 
 ![](/assets/admin_bar.png)
 
 Si on clique sur l'entrée "Restaurants", pour l'instant aucun document n'est présent à l'intérieur. Nous allons maintenant ajouter de la donnée.
 
-Créons un dossier "data" dans lib, et ajoutons-y un fichier data.json avec ces données :
+Créons un dossier "data" dans lib, et ajoutons-y un fichier data.json avec ces données qui serviront de fixtures :
 
 ```json
 {"address": "1007 Morris Park Ave", "borough": "Bronx", "cuisine": "Bakery", "grades": [{"date": "01/01/2017", "grade": "A", "score": 2}, {"date": "01/01/2017", "grade": "A", "score": 6}, {"date": "01/01/2017", "grade": "A", "score": 10}, {"date": "01/01/2017", "grade": "A", "score": 9}, {"date": "01/01/2017", "grade": "B", "score": 14}], "name": "Morris Park Bake Shop"}
@@ -156,6 +162,8 @@ Les groupes et utilisateurs par défaut \(admin, user\), les pages de base \(hom
 Par exemple, ici, c'est un document de type "apostrophe-user":
 
 ![](/assets/type_user.png)
+
+### Insertions des fixtures
 
 Retournons dans le fichier lib/data/index.js et ajoutons-y ce code :
 
@@ -219,7 +227,7 @@ module.exports = {
 }
 ```
 
-Que fait-on ici ? On utilise les événements Apostrophe : `construct` et `self.afterInit`sont des méthodes du cycle de vie du CMS. On commence par rechercher si des documents de type "restaurant" existent \(selon la méthode des curseurs préconisée dans le tutoriel Apostrophe\), sinon on lit le fichier de données et on insère les données \(toujours la méthode des curseurs\).
+Que fait-on ici ? On utilise les événements Apostrophe : `construct` et `self.afterInit`sont des méthodes du cycle de vie du CMF. On commence par rechercher si des documents de type "restaurant" existent \(selon la méthode des curseurs préconisée dans le tutoriel Apostrophe\), sinon on lit le fichier de données et on insère les données \(toujours la méthode des curseurs\).
 
 Dernière étape : ajouter le module "data" dans app.js pour l'activer et sauvegarder \(ce qui doit redémarrer l'appli avec nodemon\) :
 
@@ -232,6 +240,8 @@ Dernière étape : ajouter le module "data" dans app.js pour l'activer et sauveg
 En cliquant sur "Restaurants" dans la barre d'administration, on voit maintenant apparaitre les données parce que leur structure correspond au schéma défini dans le module "restaurant".
 
 ![](/assets/restaurants_modal.png)
+
+### Affichage des données
 
 Les utilisateurs connectés \(auteurs\) auront la possibilité d'éditer ces "pieces", d'en ajouter, d'en supprimer. Nous allons maintenant afficher la liste des restaurants pour qu'elle soit accessible à l'ensemble des utilisateurs du site. Dans cette optique, il faut un module qui étendra "apostrophe-pieces-pages", qui comme son nom l'indique est fait pour afficher des pieces sur des pages. 2 sortes de pages sont disponibles par défaut :
 
@@ -312,7 +322,7 @@ Le nouveau type de page "Restaurant" est bien là :
 
 ![](/assets/new_page_type.png)
 
-Avant qu'un auteur puisse créer une page de ce type, il faut définir les templates en créant un dossier "views" dans "restaurant-pages" puis à l'intérieur 2 fichiers : index.html et show.html.
+Avant qu'un auteur puisse créer une page de ce type, on peut surcharger les templates : par défaut, Apostrophe affichera les templates index.html \(pour le listing des produits\) et show.html \(pour le détail d'un produit\). Mais on veut personnaliser un minimum l'affichage, nous créons donc un dossier "views" dans "restaurant-pages" puis à l'intérieur 2 fichiers : index.html et show.html.
 
 index.html :
 
@@ -334,6 +344,10 @@ index.html :
   {{ pager.render({ page: data.currentPage, total: data.totalPages }, data.url) }}
 {% endblock %}
 ```
+
+On peut noter la gestion de la pagination par Apostrophe avec la macro "pager" à la fin du template index.
+
+
 
 show.html :
 
@@ -386,7 +400,7 @@ Si on veut laisser à l'auteur la possiblité d'aller plus loin dans la personna
 }) }}
 ```
 
-Avec cette area nommée "additionalField, l'auteur pourra ajouter autant d'élements de ces 3 widgets qu'il souhaite et réordonner ces éléments entre eux.
+Avec cette area nommée "additionalField", l'auteur pourra ajouter autant d'élements de ces 3 widgets qu'il souhaite et réordonner ces éléments entre eux.
 
 ![](/assets/additional-widgets.png)
 
