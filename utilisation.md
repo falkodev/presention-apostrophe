@@ -322,7 +322,7 @@ Le nouveau type de page "Restaurant" est bien là :
 
 ![](/assets/new_page_type.png)
 
-Avant qu'un auteur puisse créer une page de ce type, on peut surcharger les templates : par défaut, Apostrophe affichera les templates index.html \(pour le listing des produits\) et show.html \(pour le détail d'un produit\) de son module interne. Mais on veut personnaliser un minimum l'affichage, nous créons donc un dossier "views" dans "restaurant-pages" puis à l'intérieur 2 fichiers : index.html et show.html.
+Avant qu'un auteur puisse créer une page de ce type, on peut surcharger les templates : par défaut, la librairie "apostrophe-pieces-pages" interne à Apostrophe \(dans node\_modules/apostrophe/lib/apostrophe-pieces-pages\) contient les templates index.html \(pour le listing des produits\) et show.html \(pour le détail d'un produit\) de son module interne. Mais on veut personnaliser un minimum l'affichage, nous créons donc un dossier "views" dans "lib/modules/restaurant-pages" puis à l'intérieur 2 fichiers : index.html et show.html, ce qui aura pour effet de remplacer les templates d'origine.
 
 index.html :
 
@@ -345,7 +345,7 @@ index.html :
 {% endblock %}
 ```
 
-On peut noter la gestion de la pagination par Apostrophe avec la macro "pager" à la fin du template index.
+On peut noter la gestion de la pagination avec la macro "pager" à la fin du template index.
 
 show.html :
 
@@ -380,7 +380,7 @@ show.html :
 
 Les templates sont au format [Nunjucks](https://mozilla.github.io/nunjucks/) dans ce CMS.
 
-Un auteur pourra désormais créer une page /restaurants et les pages de liste et de détail sont déjà prêtes. Créons cette page de la manière suivante :
+Un auteur pourra désormais créer une page "/restaurants" et les pages de liste et de détail sont déjà prêtes. Créons cette page de la manière suivante :
 
 ![](/assets/new_page.png)
 
@@ -415,8 +415,6 @@ En cliquant sur le lien, on arrivera sur l'url localhost:3000/restaurants :
 Et en naviguant vers un des restaurants :
 
 ![](/assets/detail.png)
-
-
 
 ### Widgets
 
