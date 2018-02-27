@@ -30,9 +30,5 @@ Toutes ces notions seront explicitées plus loin.
 
 Le CMF datant de quelques années, il utilise par défaut LESS en tant que compilateur CSS, et jQuery. On verra qu'il est possible d'utiliser Sass et d'inclure des applications modernes basées sur React ou Vue. Mais, Tom Boutell, le principal créateur de la solution, est fan de jQuery. Il s'en sert essentiellement pour de l'AJAX, et défend son point de vue dans le tutoriel : [http://apostrophecms.org/docs/tutorials/getting-started/reusable-content-with-pieces.html](http://apostrophecms.org/docs/tutorials/getting-started/reusable-content-with-pieces.html) \(vers la fin de la page, il explique ne pas avoir besoin de React ou d'Angular\). Il est vrai que son système de "live editing" est basé sur jQuery et fonctionne très bien, sans rechargement, à la manière de ce qui se fait dans beaucoup d'applications modernes.
 
-## Sites utilisant Apostrophe
 
-A part - apparemment - tous les sites web des administrations de Philadelphie, en France, le groupe Michelin et ses filiales commencent à utiliser Apostrophe. Par exemple : [velo.michelin.fr](http://velo.michelin.fr)
-
-En inspectant ce dernier, vous remarquerez que nous avons utilisé React pour le sélecteur de pneus. Tout le reste est du pur Apostrophe.
 
