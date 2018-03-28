@@ -1,6 +1,6 @@
 # Présentation du CMS Apostrophe
 
-En fait de CMS, je dirais qu'il s'agit d'un CMF, d'un framework qui va pouvoir créer un CMS sur-mesure. Celui-ci est basé sur Node.js et MongoDB. A l'origine fait en Symfony donc en PHP, les créateurs, une agence web de Philadelphie, ont switché vers Node il y a quelques années.
+En fait de CMS, il faut parler de CMF, d'un framework qui va pouvoir créer un CMS sur-mesure. Celui-ci est basé sur Node.js et MongoDB. A l'origine fait en Symfony donc en PHP, les créateurs, une agence web de Philadelphie, ont basculé vers Node il y a quelques années.
 
 ![](/assets/import.png)
 

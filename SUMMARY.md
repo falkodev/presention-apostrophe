@@ -1,6 +1,6 @@
 # Summary
 
 * [Présentation](README.md)
-* [Utilisation](utilisation.md)
-* [Aller plus loin](aller-plus-loin.md)
+* [Données](utilisation.md)
+* [Templates](templates.md)
 
