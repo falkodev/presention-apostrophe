@@ -1,6 +1,4 @@
-# Summary
+# Table of contents
 
-* [Présentation](README.md)
-* [Données](utilisation.md)
-* [Templates](templates.md)
+* Initial page
 
