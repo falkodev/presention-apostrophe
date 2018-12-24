@@ -1,4 +1,4 @@
 # Table of contents
 
-* Initial page
+* [Découvrir les React Hooks](README.md)
 
