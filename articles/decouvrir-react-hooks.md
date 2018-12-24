@@ -14,5 +14,37 @@ Dan Abramov, spécialiste des[ conférences avec effet d'annonces,](https://tarl
 
 {% embed url="https://www.youtube.com/watch?v=dpw9EHDh2bM" %}
 
-Cette solution, ce sont les hooks, qui permettent de gérer l'état local, l'API Context \(pour passer des variables globales à travers un arbre de composants\) , et [toutes sortes de hooks](https://reactjs.org/docs/hooks-reference.html).
+Cette solution, ce sont les hooks, qui permettent de gérer l'état local, l'API Context \(pour passer des variables globales à travers un arbre de composants\) , et [toutes sortes de hook](https://reactjs.org/docs/hooks-reference.html)
+
+```javascript
+import React from 'react'
+import PropTypes from 'prop-types'
+import Markdown from 'react-remarkable'
+import './RenderPost.css'
+
+const Post = props => {
+  const post = props.post
+  return (
+    <div className="post">
+      <div className="post__content">
+        <Markdown>{post.content}</Markdown>
+      </div>
+      <div className="post__tags">{post.tags}</div>
+      <div className="post__author">{post.author}</div>
+    </div>
+  )
+}
+
+Post.propTypes = {
+  number: PropTypes.number,
+  content: PropTypes.string,
+  tags: PropTypes.array,
+  author: PropTypes.string,
+}
+
+export default Post
+
+```
+
+
 

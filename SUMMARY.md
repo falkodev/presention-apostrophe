@@ -4,6 +4,5 @@
 
 ## Articles
 
-* [Découvrir les React Hooks](articles/test-2.md)
-* [Test 3](articles/test-3.md)
+* [Découvrir les React Hooks](articles/decouvrir-react-hooks.md)
 
